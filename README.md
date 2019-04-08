@@ -42,18 +42,78 @@ unzip dev_data.json.zip
 cd -
 ```
 
-### Step 4: Train p-classification model
+### Step 4: Train predicate classifiction model
 
 ```
 python bin/predicate_classifiction/predicate_data_manager.py
 python run_predicate_classification.py
 ```
 
-### Step 5: Train so-labeling model
+**Reference training parameters**
+```
+python run_predicate_classification.py \
+--task_name=SKE_2019 \
+--do_train=true \
+--do_eval=true \
+--data_dir=bin/predicate_classifiction/classification_data \
+--vocab_file=pretrained_model/chinese_L-12_H-768_A-12/vocab.txt \
+--bert_config_file=pretrained_model/chinese_L-12_H-768_A-12/bert_config.json \
+--init_checkpoint=pretrained_model/chinese_L-12_H-768_A-12/bert_model.ckpt \
+--max_seq_length=128 \
+--train_batch_size=32 \
+--learning_rate=2e-5 \
+--num_train_epochs=6.0 \
+--output_dir=./output/predicate_classification_model/_epochs6/
+```
+
+**Reference Prediction Parameters**
+```
+python run_predicate_classification.py \
+  --task_name=SKE_2019 \
+  --do_predict=true \
+  --data_dir=bin/predicate_classifiction/classification_data \
+  --vocab_file=pretrained_model/chinese_L-12_H-768_A-12/vocab.txt \
+  --bert_config_file=pretrained_model/chinese_L-12_H-768_A-12/bert_config.json \
+  --init_checkpoint=output/predicate_classification_model/epochs6/model.ckpt-9000 \
+  --max_seq_length=128 \
+  --output_dir=./output/predicate_infer_out/epochs6/ckpt9000
+```
+
+### Step 5: Train sequence labeling model
 ```
 python bin/subject_object_labeling/sequence_labeling_data_manager.py
 python prepare_data_for_labeling_infer.py
 python run_sequnce_labeling.py
+```
+
+**Reference training parameters**
+```
+python run_sequnce_labeling.py \
+--task_name=SKE_2019 \
+--do_train=true \
+--do_eval=true \
+--data_dir=bin/subject_object_labeling/sequence_labeling_data \
+--vocab_file=pretrained_model/chinese_L-12_H-768_A-12/vocab.txt \
+--bert_config_file=pretrained_model/chinese_L-12_H-768_A-12/bert_config.json \
+--init_checkpoint=pretrained_model/chinese_L-12_H-768_A-12/bert_model.ckpt \
+--max_seq_length=128 \
+--train_batch_size=32 \
+--learning_rate=2e-5 \
+--num_train_epochs=9.0 \
+--output_dir=./output/sequnce_labeling_model/epochs9/
+```
+
+**Reference Prediction Parameters**
+```
+python run_sequnce_labeling.py \
+  --task_name=SKE_2019 \
+  --do_predict=true \
+  --data_dir=bin/subject_object_labeling/sequence_labeling_data \
+  --vocab_file=pretrained_model/chinese_L-12_H-768_A-12/vocab.txt \
+  --bert_config_file=pretrained_model/chinese_L-12_H-768_A-12/bert_config.json \
+  --init_checkpoint=output/sequnce_labeling_model/epochs9/model.ckpt-12000 \
+  --max_seq_length=128 \
+  --output_dir=./output/sequnce_infer_out/epochs9/ckpt12000
 ```
 
 ### Step 6: Infer with two trained models
