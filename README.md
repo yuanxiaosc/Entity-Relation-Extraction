@@ -1,7 +1,7 @@
 # Entity-Relation-Extraction
 Entity and Relation Extraction Based on TensorFlow. 基于 TensorFlow 的实体及关系抽取，2019语言与智能技术竞赛信息抽取任务解决方案。
 
-more info: [2019语言与智能技术竞赛](http://lic2019.ccf.org.cn) and [Baidu Official Baseline Model](https://github.com/baidu/information-extraction)
+more info: [2019语言与智能技术竞赛](http://lic2019.ccf.org.cn) , [Baidu Official Baseline Model(Python2.7)](https://github.com/baidu/information-extraction) and [Baseline Model(Python3)](https://github.com/yuanxiaosc/information-extraction)
 
 ## Abstract
 该代码以管道式的方式处理实体及关系抽取任务，首先使用一个多标签分类模型判断句子的关系种类，然后把句子和可能的关系种类输入序列标注模型中，序列标注模型标注出句子中的实体，最终结合预测的关系和实体输出实体-关系列表：（实体1，关系，实体2）。
@@ -31,7 +31,9 @@ The code deals with entity and relationship extraction tasks in a pipeline way. 
 + python 3.6+
 + Tensorflow 1.12.0+
 
-### Step 1: Install Tensorflow
+### Step 1: Environmental preparation
++ Install Tensorflow 
++ Dowload [bert-base, chinese](https://storage.googleapis.com/bert_models/2018_11_03/chinese_L-12_H-768_A-12.zip), unzip file and put it in ```pretrained_model``` floader.
 
 ### Step 2: Download the training data, dev data and schema files
 Please download the training data, development data and schema files from [the competition website](http://lic2019.ccf.org.cn/kg), then unzip files and put them in ```./raw_data/``` folder.
@@ -41,6 +43,12 @@ unzip train_data.json.zip
 unzip dev_data.json.zip
 cd -
 ```
+
+[百度网盘-2019语言与智能技术竞赛_信息抽取raw_data](https://pan.baidu.com/s/10-3iV9gR_-Lvxj9B6bSW2g)
+
++ 百度网盘提取码：链接：https://pan.baidu.com/s/10-3iV9gR_-Lvxj9B6bSW2g 
++ 提取码：hou4 
+
 
 ### Step 4: Train predicate classifiction model
 
