@@ -494,15 +494,15 @@ def create_model(bert_config, is_training, input_ids, input_mask, segment_ids,
             # I.e., 0.1 dropout
             output_layer = tf.nn.dropout(output_layer, keep_prob=0.9)
 
-        logits = tf.matmul(output_layer, output_weights, transpose_b=True)
-        logits = tf.nn.bias_add(logits, output_bias)
+        logits_wx = tf.matmul(output_layer, output_weights, transpose_b=True)
+        logits = tf.nn.bias_add(logits_wx, output_bias)
         probabilities = tf.sigmoid(logits)
         label_ids = tf.cast(labels, tf.float32)
         per_example_loss = tf.reduce_sum(
             tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=label_ids), axis=-1)
         loss = tf.reduce_mean(per_example_loss)
 
-        return (loss, per_example_loss, logits, probabilities)
+        return loss, per_example_loss, logits, probabilities
 
 
 def model_fn_builder(bert_config, num_labels, init_checkpoint, learning_rate,
@@ -571,9 +571,14 @@ def model_fn_builder(bert_config, num_labels, init_checkpoint, learning_rate,
         elif mode == tf.estimator.ModeKeys.EVAL:
 
             def metric_fn(per_example_loss, label_ids, probabilities, is_real_example):
-                probabilities = tf.cast(probabilities > 0.5, tf.float32)
-                label_ids = tf.cast(label_ids, tf.float32)
-                accuracy = tf.abs(tf.reduce_mean(label_ids - probabilities))
+                predict_ids = tf.cast(probabilities > 0.5, tf.int32)
+                label_ids = tf.cast(label_ids, tf.int32)
+                elements_equal = tf.cast(tf.equal(predict_ids, label_ids), tf.int32)
+                # change [batch_size, class_numbers] to [1, batch_size]
+                row_predict_ids = tf.reduce_sum(elements_equal, -1)
+                row_label_ids = tf.reduce_sum(tf.ones_like(elements_equal), -1)
+                accuracy = tf.metrics.accuracy(
+                    labels=row_label_ids, predictions=row_predict_ids)
                 loss = tf.metrics.mean(values=per_example_loss, weights=is_real_example)
                 return {
                     "eval_accuracy": accuracy,

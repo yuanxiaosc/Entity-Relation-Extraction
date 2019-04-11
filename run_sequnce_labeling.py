@@ -239,7 +239,7 @@ class SKE_2019_Sequence_labeling_Processor(DataProcessor):
 
 
     def get_token_labels(self):
-        BIO_token_labels = ["[Padding]", "[##WordPiece]", "[CLS]", "[SEP]", "B-SUB", "I-SUB", "B-OBJ", "I-OBJ", "O"]  #id 0 --> [Paddding]
+        BIO_token_labels = ["[Padding]", "[category]", "[##WordPiece]", "[CLS]", "[SEP]", "B-SUB", "I-SUB", "B-OBJ", "I-OBJ", "O"]  #id 0 --> [Paddding]
         return BIO_token_labels
 
     def get_predicate_labels(self):
@@ -323,7 +323,7 @@ def convert_single_example(ex_index, example, token_label_list, predicate_label_
     for token in tokens_b:
       input_ids.append(predicate_id + bias) #add  bias for different from word dict
       segment_ids.append(1)
-      token_label_ids.append(token_label_map["[Padding]"])
+      token_label_ids.append(token_label_map["[category]"])
 
     input_ids.append(tokenizer.convert_tokens_to_ids(["[SEP]"])[0]) #102
     segment_ids.append(1)

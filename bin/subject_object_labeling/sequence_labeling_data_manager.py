@@ -14,7 +14,9 @@ class Model_data_preparation(object):
         self.bert_tokenizer = tokenization.FullTokenizer(vocab_file=self.get_vocab_file_path(vocab_file_path),
                                                          do_lower_case=do_lower_case)  # 初始化 bert_token 工具
         self.DATA_INPUT_DIR = self.get_data_input_dir(DATA_INPUT_DIR)
-        self.DATA_OUTPUT_DIR = DATA_OUTPUT_DIR
+        self.DATA_OUTPUT_DIR = os.path.join(os.path.dirname(__file__), DATA_OUTPUT_DIR)
+        print("数据输入路径：", self.DATA_INPUT_DIR)
+        print("数据输出路径：", self.DATA_OUTPUT_DIR)
 
     def get_data_input_dir(self, DATA_INPUT_DIR):
         DATA_INPUT_DIR = os.path.join(
@@ -122,7 +124,6 @@ class Model_data_preparation(object):
                 path_to_raw_data_file = "dev_data.json"
             else:
                 pass
-
             with open(os.path.join(self.DATA_INPUT_DIR, path_to_raw_data_file), 'r', encoding='utf-8') as f:
                 count_numbers = 0
                 while True:

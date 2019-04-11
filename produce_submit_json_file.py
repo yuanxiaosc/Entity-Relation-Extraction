@@ -2,6 +2,27 @@
 import os
 import json
 
+# 获取最新模型预测数据文件夹
+def get_latest_model_predict_data_dir(new_epochs_ckpt_dir=None):
+    # 获取文件下最新文件路径
+    def new_report(test_report):
+        lists = os.listdir(test_report)  # 列出目录的下所有文件和文件夹保存到lists
+        lists.sort(key=lambda fn: os.path.getmtime(test_report + "/" + fn))  # 按时间排序
+        file_new = os.path.join(test_report, lists[-1])  # 获取最新的文件保存到file_new
+        return file_new
+    if new_epochs_ckpt_dir is None:
+        # 获取分类预测输出文件路径
+        input_new_epochs = os.path.join(
+                os.path.abspath(os.path.join(os.path.dirname(__file__), "output")), "sequnce_infer_out")
+        # 获取最新周期文件路径
+        new_ckpt_dir = new_report(input_new_epochs)
+        input_new_epochs_ckpt = os.path.join(input_new_epochs, new_ckpt_dir)
+        # 获取最新周期下最新模型文件路径
+        new_epochs_ckpt_dir = new_report(input_new_epochs_ckpt)
+    if not os.path.exists(new_ckpt_dir):
+        raise ValueError("路径不存在！{}".format(new_epochs_ckpt_dir))
+    return new_epochs_ckpt_dir
+
 # dict is comes from raw_data all_50_schemas
 schemas_dict_relation_2_object_subject_type = {
     '父亲': [('人物', '人物')],
@@ -56,9 +77,9 @@ schemas_dict_relation_2_object_subject_type = {
 
 class File_Management(object):
     """读取TXT文件，以列表形式返回文件内容"""
-    def __init__(self, TEST_DATA_DIR, MODEL_OUTPUT_DIR, Competition_Mode=True):
+    def __init__(self, TEST_DATA_DIR=None, MODEL_OUTPUT_DIR=None, Competition_Mode=True):
         self.TEST_DATA_DIR = TEST_DATA_DIR
-        self.MODEL_OUTPUT_DIR = MODEL_OUTPUT_DIR
+        self.MODEL_OUTPUT_DIR = get_latest_model_predict_data_dir(MODEL_OUTPUT_DIR)
         self.Competition_Mode = Competition_Mode
 
     def file_path_and_name(self):
@@ -89,7 +110,7 @@ class File_Management(object):
                                            zip(content_list_summary, file_name_list)]
             file_line_number = self._check_file_line_numbers(content_list_length_summary)
             print("Competition_Mode=True, check file line pass!")
-            print("all files line is same, it is: ", file_line_number)
+            print("输入文件行数一致，行数是: ", file_line_number)
         else:
             file_line_number = len(content_list_summary[0])
             print("first file line number: ", file_line_number)
@@ -113,6 +134,8 @@ class Sorted_relation_and_entity_list_Management(File_Management):
         # 关系列表 把模型输出的实数值对应为标签
         self.relationship_label_list = ['丈夫', '上映时间', '专业代码', '主持人', '主演', '主角', '人口数量', '作曲', '作者', '作词', '修业年限', '出品公司', '出版社', '出生地', '出生日期', '创始人', '制片人', '占地面积', '号', '嘉宾', '国籍', '妻子', '字', '官方语言', '导演', '总部地点', '成立日期', '所在城市', '所属专辑', '改编自', '朝代', '歌手', '母亲', '毕业院校', '民族', '气候', '注册资本', '海拔', '父亲', '目', '祖籍', '简称', '编剧', '董事长', '身高', '连载网站', '邮政编码', '面积', '首都']
         self.Competition_Mode = Competition_Mode
+        print("test数据输入路径是:\t{}".format(self.TEST_DATA_DIR))
+        print("最新模型预测结果路径是:\t{}".format(self.MODEL_OUTPUT_DIR))
 
     def get_input_list(self,):
         content_list_summary, self.file_line_number = self.read_file_return_content_list()
@@ -269,7 +292,7 @@ class Sorted_relation_and_entity_list_Management(File_Management):
             out_path = filename
         else:
             out_path = os.path.join(OUT_RESULTS_DIR, filename)
-        print("final json results file save to {}".format(out_path))
+        print("生成结果的输出路径是:\t{}".format(out_path))
         if not os.path.exists(OUT_RESULTS_DIR):
             os.makedirs(OUT_RESULTS_DIR)
         result_json_write_f = open(out_path, "w", encoding='utf-8')
@@ -294,7 +317,8 @@ class Sorted_relation_and_entity_list_Management(File_Management):
 
 if __name__=='__main__':
     TEST_DATA_DIR = "bin/subject_object_labeling/sequence_labeling_data/test"
-    MODEL_OUTPUT_DIR = "output/sequnce_infer_out/epochs6/ckpt4000"
+    # MODEL_OUTPUT_DIR = "output/sequnce_infer_out/epochs9/ckpt20000"
+    MODEL_OUTPUT_DIR = None
     OUT_RESULTS_DIR = "output/final_text_spo_list_result"
     Competition_Mode = True
     spo_list_manager = Sorted_relation_and_entity_list_Management(TEST_DATA_DIR, MODEL_OUTPUT_DIR, Competition_Mode=Competition_Mode)

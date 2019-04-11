@@ -16,20 +16,35 @@ def unzip_and_move_files():
 
 class Model_data_preparation(object):
 
-    def __init__(self, DATA_INPUT_DIR="raw_data", DATA_OUTPUT_DIR="SKE_2019_tokened_labeling",
-                 vocab_file_path="vocab.txt", do_lower_case=True, Competition_Mode=False):
+    def __init__(self, RAW_DATA_INPUT_DIR="raw_data", DATA_OUTPUT_DIR="classfication_data",
+                 vocab_file_path="vocab.txt", do_lower_case=True, Competition_Mode=False, Valid_Model=False):
+        '''
+        :param RAW_DATA_INPUT_DIR: 输入文件目录，一般是原始数据目录
+        :param DATA_OUTPUT_DIR: 输出文件目录，一般是分类任务数据文件夹
+        :param vocab_file_path: 词表路径，一般是预先训练的模型的词表路径
+        :param do_lower_case: 默认TRUE
+        :param Competition_Mode: 非比赛模式下，会把验证valid数据作为测试test数据生成
+        :param Valid_Model: 验证模式下，仅仅会生成test测试数据
+        '''
         # BERT 自带WordPiece分词工具，对于中文都是分成单字
         self.bert_tokenizer = tokenization.FullTokenizer(vocab_file=self.get_vocab_file_path(vocab_file_path),
                                                          do_lower_case=do_lower_case)  # 初始化 bert_token 工具
-        self.DATA_INPUT_DIR = self.get_data_input_dir(DATA_INPUT_DIR)
-        self.DATA_OUTPUT_DIR = DATA_OUTPUT_DIR
+        self.DATA_INPUT_DIR = self.get_data_input_dir(RAW_DATA_INPUT_DIR)
+        self.DATA_OUTPUT_DIR = os.path.join(os.path.dirname(__file__), DATA_OUTPUT_DIR)
         self.Competition_Mode = Competition_Mode
+        self.Valid_Model= Valid_Model
+        print("数据输入路径：", self.DATA_INPUT_DIR)
+        print("数据输出路径：", self.DATA_OUTPUT_DIR)
+        print("是否是比赛模式（非比赛模式下，会把验证valid数据作为测试test数据生成）：", self.Competition_Mode)
+        print("是否是验证模式（验证模式下，仅仅会生成test测试数据）：", self.Valid_Model)
 
+    # 获取输入文件路径
     def get_data_input_dir(self, DATA_INPUT_DIR):
         DATA_INPUT_DIR = os.path.join(
             os.path.abspath(os.path.join(os.path.dirname(__file__), "../../")), DATA_INPUT_DIR)
         return DATA_INPUT_DIR
 
+    # 获取词汇表路径
     def get_vocab_file_path(self, vocab_file_path):
         vocab_file_path = os.path.join(
             os.path.abspath(os.path.join(os.path.dirname(__file__), "../../pretrained_model/chinese_L-12_H-768_A-12")), vocab_file_path)
@@ -42,9 +57,12 @@ class Model_data_preparation(object):
             os.makedirs(os.path.join(self.DATA_OUTPUT_DIR, "valid"))
             os.makedirs(os.path.join(self.DATA_OUTPUT_DIR, "test"))
 
-        for file_set_type in ["train", "valid", "test"]:
-            print(os.path.join(os.path.join(self.DATA_OUTPUT_DIR, file_set_type)))
-            if file_set_type in ["train", "valid"]:
+        file_set_type_list = ["train", "valid", "test"]
+        if self.Valid_Model:
+            file_set_type_list = ["test"]
+        for file_set_type in file_set_type_list:
+            print("produce data will store in: ", os.path.join(os.path.join(self.DATA_OUTPUT_DIR, file_set_type)))
+            if file_set_type in ["train", "valid"] or not self.Competition_Mode:
                 predicate_out_f = open(
                     os.path.join(os.path.join(self.DATA_OUTPUT_DIR, file_set_type), "predicate_out.txt"), "w",
                     encoding='utf-8')
@@ -56,7 +74,6 @@ class Model_data_preparation(object):
                 os.path.join(os.path.join(self.DATA_OUTPUT_DIR, file_set_type), "token_in_not_UNK.txt"), "w",
                 encoding='utf-8')
 
-            #
             def predicate_to_predicate_file(spo_list):
                 predicate_list = [spo['predicate'] for spo in spo_list]
                 predicate_list_str = " ".join(predicate_list)
@@ -79,7 +96,7 @@ class Model_data_preparation(object):
                     if line:
                         count_numbers += 1
                         r = json.loads(line)
-                        if file_set_type in ["train", "valid"]:
+                        if (not self.Competition_Mode) or file_set_type in ["train", "valid"]:
                             spo_list = r["spo_list"]
                         else:
                             spo_list = []
@@ -87,27 +104,24 @@ class Model_data_preparation(object):
                         text_tokened = self.bert_tokenizer.tokenize(text)
                         text_tokened_not_UNK = self.bert_tokenizer.tokenize_not_UNK(text)
 
-                        if file_set_type in ["train", "valid"]:
+                        if (not self.Competition_Mode) or file_set_type in ["train", "valid"]:
                             predicate_to_predicate_file(spo_list)
                         text_f.write(text + "\n")
                         token_in_f.write(" ".join(text_tokened) + "\n")
                         token_in_not_UNK_f.write(" ".join(text_tokened_not_UNK) + "\n")
                     else:
                         break
-            print(file_set_type)
             print("all numbers", count_numbers)
             print("\n")
             text_f.close()
             token_in_f.close()
             token_in_not_UNK_f.close()
-            if file_set_type in ["train", "valid"]:
-                predicate_out_f.close()
-
 
 if __name__ == "__main__":
-    DATA_DIR = "raw_data"
-    DATA_OUTPUT_DIR = "classfication_data"
+    RAW_DATA_DIR = "raw_data"
+    DATA_OUTPUT_DIR = "classification_data"
     Competition_Mode = True
+    Valid_Mode = False
     model_data = Model_data_preparation(
-        DATA_INPUT_DIR=DATA_DIR, DATA_OUTPUT_DIR=DATA_OUTPUT_DIR, Competition_Mode=Competition_Mode)
+        RAW_DATA_INPUT_DIR=RAW_DATA_DIR, DATA_OUTPUT_DIR=DATA_OUTPUT_DIR, Competition_Mode=Competition_Mode, Valid_Model=Valid_Mode)
     model_data.separate_raw_data_and_token_labeling()
