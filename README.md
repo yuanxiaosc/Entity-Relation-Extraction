@@ -50,19 +50,21 @@ cd -
 + 提取码：hou4 
 
 
-### Step 4: Train predicate classifiction model
+关系分类模型和实体序列标注模型可以同时训练，但是只能依次预测！
 
+## 训练阶段
+
+### 准备关系分类数据
 ```
 python bin/predicate_classifiction/predicate_data_manager.py
-python run_predicate_classification.py
 ```
 
-**Reference training parameters**
+### 关系分类模型训练
 ```
 python run_predicate_classification.py \
 --task_name=SKE_2019 \
 --do_train=true \
---do_eval=true \
+--do_eval=false \
 --data_dir=bin/predicate_classifiction/classification_data \
 --vocab_file=pretrained_model/chinese_L-12_H-768_A-12/vocab.txt \
 --bert_config_file=pretrained_model/chinese_L-12_H-768_A-12/bert_config.json \
@@ -71,35 +73,20 @@ python run_predicate_classification.py \
 --train_batch_size=32 \
 --learning_rate=2e-5 \
 --num_train_epochs=6.0 \
---output_dir=./output/predicate_classification_model/_epochs6/
+--output_dir=./output/predicate_classification_model/epochs6/
 ```
 
-**Reference Prediction Parameters**
-```
-python run_predicate_classification.py \
-  --task_name=SKE_2019 \
-  --do_predict=true \
-  --data_dir=bin/predicate_classifiction/classification_data \
-  --vocab_file=pretrained_model/chinese_L-12_H-768_A-12/vocab.txt \
-  --bert_config_file=pretrained_model/chinese_L-12_H-768_A-12/bert_config.json \
-  --init_checkpoint=output/predicate_classification_model/epochs6/model.ckpt-9000 \
-  --max_seq_length=128 \
-  --output_dir=./output/predicate_infer_out/epochs6/ckpt9000
-```
-
-### Step 5: Train sequence labeling model
+### 准备序列标注数据
 ```
 python bin/subject_object_labeling/sequence_labeling_data_manager.py
-python prepare_data_for_labeling_infer.py
-python run_sequnce_labeling.py
 ```
 
-**Reference training parameters**
+### 序列标注模型训练
 ```
 python run_sequnce_labeling.py \
 --task_name=SKE_2019 \
 --do_train=true \
---do_eval=true \
+--do_eval=false \
 --data_dir=bin/subject_object_labeling/sequence_labeling_data \
 --vocab_file=pretrained_model/chinese_L-12_H-768_A-12/vocab.txt \
 --bert_config_file=pretrained_model/chinese_L-12_H-768_A-12/bert_config.json \
@@ -111,7 +98,27 @@ python run_sequnce_labeling.py \
 --output_dir=./output/sequnce_labeling_model/epochs9/
 ```
 
-**Reference Prediction Parameters**
+## 预测阶段
+
+### 关系分类模型预测
+```
+python run_predicate_classification.py \
+  --task_name=SKE_2019 \
+  --do_predict=true \
+  --data_dir=bin/predicate_classifiction/classification_data \
+  --vocab_file=pretrained_model/chinese_L-12_H-768_A-12/vocab.txt \
+  --bert_config_file=pretrained_model/chinese_L-12_H-768_A-12/bert_config.json \
+  --init_checkpoint=output/predicate_classification_model/epochs6/model.ckpt-27000 \
+  --max_seq_length=128 \
+  --output_dir=./output/predicate_infer_out/epochs6/ckpt27000
+```
+
+### 把关系分类模型预测结果转换成序列标注模型的预测输入
+```
+python bin/prepare_data_for_labeling_infer.py
+```
+
+### 序列标注模型预测
 ```
 python run_sequnce_labeling.py \
   --task_name=SKE_2019 \
@@ -119,24 +126,30 @@ python run_sequnce_labeling.py \
   --data_dir=bin/subject_object_labeling/sequence_labeling_data \
   --vocab_file=pretrained_model/chinese_L-12_H-768_A-12/vocab.txt \
   --bert_config_file=pretrained_model/chinese_L-12_H-768_A-12/bert_config.json \
-  --init_checkpoint=output/sequnce_labeling_model/epochs9/model.ckpt-12000 \
+  --init_checkpoint=output/sequnce_labeling_model/epochs9/model.ckpt-22000 \
   --max_seq_length=128 \
-  --output_dir=./output/sequnce_infer_out/epochs9/ckpt12000
+  --output_dir=./output/sequnce_infer_out/epochs9/ckpt22000
 ```
 
-### Step 6: Infer with two trained models
-
+### 生成实体-关系结果
 ```
-python prepare_data_for_labeling_infer.py
-```
-
-The predicted SPO triples will be saved in the folder ```output/final_text_spo_list_result/spo_list_subject_predicate_object_predict_output.json```.
-
-## Evaluation
-
-```
-zip -r spo_list_subject_predicate_object_predict_output.json ./data/test.res
-python bin/evaluation/calc_pr.py --golden_file=./data/test_demo_spo.json --predict_file=./data/test.res.zip
+python produce_submit_json_file.py
 ```
 
+## 评估阶段
+注意！官方提供的测试数据集 test1_data_postag.json 没有提供标签，所以只能提交给官方评测。
+如果要自行评测模型效果：
+```
+predicate_data_manager.py set: Competition_Mode = False
+```
+然后运行：```bin/evaluation``` 中的评测文件
 
+
+### 提交给官方评测的部分实验结果
+
+|分类模型|序列标注模型|准确率|召回率|F1值|
+|-|-|-|-|-|
+|epochs6ckpt1000|epochs9ckpt4000|0.8549|0.7028|0.7714|
+|epochs6ckpt13000|epochs9ckpt10000|0.8694|0.7188|0.7869|
+|epochs6ckpt20000|epochs9ckpt17000|0.8651|0.738|0.7965|
+|epochs6ckpt23000|epochs9ckpt20000|0.8714|0.7289|0.7938|
