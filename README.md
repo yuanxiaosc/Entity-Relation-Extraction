@@ -41,16 +41,14 @@ Please download the training data, development data and schema files from [the c
 cd data
 unzip train_data.json.zip 
 unzip dev_data.json.zip
-cd -
+...
 ```
 
-[百度网盘-2019语言与智能技术竞赛_信息抽取raw_data](https://pan.baidu.com/s/10-3iV9gR_-Lvxj9B6bSW2g)
+此处不再提供2019语言与智能技术竞赛_信息抽取原始数据下载，如有疑问可以联系我的邮箱 wangzichaochaochao@gmail.com
 
-+ 百度网盘提取码：链接：https://pan.baidu.com/s/10-3iV9gR_-Lvxj9B6bSW2g 
-+ 提取码：hou4 
+There is no longer a raw data download, if you have any questions, you can contact my mailbox wangzichaochaochao@gmail.com
 
-
-关系分类模型和实体序列标注模型可以同时训练，但是只能依次预测！
+**关系分类模型和实体序列标注模型可以同时训练，但是只能依次预测！**
 
 ## 训练阶段
 
