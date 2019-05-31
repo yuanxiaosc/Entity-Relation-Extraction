@@ -1,7 +1,7 @@
 # Entity-Relation-Extraction
 Entity and Relation Extraction Based on TensorFlow. 基于 TensorFlow 的实体及关系抽取，2019语言与智能技术竞赛信息抽取任务解决方案。
 
-more info: [2019语言与智能技术竞赛](http://lic2019.ccf.org.cn) , [Baidu Official Baseline Model(Python2.7)](https://github.com/baidu/information-extraction) and [Baseline Model(Python3)](https://github.com/yuanxiaosc/information-extraction)
+more info: [2019语言与智能技术竞赛](http://lic2019.ccf.org.cn) 
 
 ## Abstract
 该代码以管道式的方式处理实体及关系抽取任务，首先使用一个多标签分类模型判断句子的关系种类，然后把句子和可能的关系种类输入序列标注模型中，序列标注模型标注出句子中的实体，最终结合预测的关系和实体输出实体-关系列表：（实体1，关系，实体2）。
@@ -151,3 +151,12 @@ predicate_data_manager.py set: Competition_Mode = False
 |epochs6ckpt13000|epochs9ckpt10000|0.8694|0.7188|0.7869|
 |epochs6ckpt20000|epochs9ckpt17000|0.8651|0.738|0.7965|
 |epochs6ckpt23000|epochs9ckpt20000|0.8714|0.7289|0.7938|
+
+![](2019语言与智能技术竞赛信息抽取排行榜.png)
+
+### 其它解决方案
+
++ [Baidu Official Baseline Model(Python2.7)](https://github.com/baidu/information-extraction) 
++ [Baseline Model(Python3)](https://github.com/yuanxiaosc/information-extraction)
++ [Multiple-Relations-Extraction-Only-Look-Once](https://github.com/yuanxiaosc/Multiple-Relations-Extraction-Only-Look-Once)
++ [Schema-based-Knowledge-Extraction](https://github.com/yuanxiaosc/Schema-based-Knowledge-Extraction)
