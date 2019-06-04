@@ -576,7 +576,7 @@ def model_fn_builder(bert_config, num_labels, init_checkpoint, learning_rate,
                 elements_equal = tf.cast(tf.equal(predict_ids, label_ids), tf.int32)
                 # change [batch_size, class_numbers] to [1, batch_size]
                 row_predict_ids = tf.reduce_sum(elements_equal, -1)
-                row_label_ids = tf.reduce_sum(tf.ones_like(elements_equal), -1)
+                row_label_ids = tf.reduce_sum(tf.ones_like(label_ids), -1)
                 accuracy = tf.metrics.accuracy(
                     labels=row_label_ids, predictions=row_predict_ids)
                 loss = tf.metrics.mean(values=per_example_loss, weights=is_real_example)
