@@ -1,16 +1,17 @@
 # Entity-Relation-Extraction
-Entity and Relation Extraction Based on TensorFlow. 基于 TensorFlow 的实体及关系抽取，2019语言与智能技术竞赛信息抽取任务解决方案。
+Entity and Relation Extraction Based on TensorFlow. 基于 TensorFlow 的实体及关系抽取，2019语言与智能技术竞赛信息抽取（实体与关系抽取）任务解决方案。
 
-more info: [2019语言与智能技术竞赛](http://lic2019.ccf.org.cn) 
+如果你对信息抽取论文研究感兴趣，可以查看我的博客 [望江人工智库 信息抽取](https://yuanxiaosc.github.io/categories/%E8%AE%BA%E6%96%87/%E4%BF%A1%E6%81%AF%E6%8A%BD%E5%8F%96/)。
 
 ## Abstract
 该代码以管道式的方式处理实体及关系抽取任务，首先使用一个多标签分类模型判断句子的关系种类，然后把句子和可能的关系种类输入序列标注模型中，序列标注模型标注出句子中的实体，最终结合预测的关系和实体输出实体-关系列表：（实体1，关系，实体2）。
 
 The code deals with entity and relationship extraction tasks in a pipeline way. First, a multi-label classification model is used to judge the relationship types of sentences. Then, the sentence and possible relationship types are input into the sequence labeling model. The sequence labeling model labels the entities in sentences, and finally combines the predicted relationship with the entity output entity-relationship list: (entity 1, relationship, entity 2).
 
-相关模型：[Schema-based-Knowledge-Extraction](https://github.com/yuanxiaosc/Schema-based-Knowledge-Extraction) 该模型联合了关系预测和实体输出，是一个联合模型，同时输出关系和实体。
+整个实体关系抽取代码的具体细节和运行过程可以阅读 [bert实践:关系抽取解读](https://blog.csdn.net/weixin_42001089/article/details/97657149)，如果还有疑问或者想法欢迎提Issues :smile:
 
 ## [2019语言与智能技术竞赛](http://lic2019.ccf.org.cn/kg)
+more info: [2019语言与智能技术竞赛](http://lic2019.ccf.org.cn) 
 
 ### 竞赛任务
 给定schema约束集合及句子sent，其中schema定义了关系P以及其对应的主体S和客体O的类别，例如（S_TYPE:人物，P:妻子，O_TYPE:人物）、（S_TYPE:公司，P:创始人，O_TYPE:人物）等。 任务要求参评系统自动地对句子进行分析，输出句子中所有满足schema约束的SPO三元组知识Triples=[(S1, P1, O1), (S2, P2, O2)…]。
@@ -154,7 +155,7 @@ predicate_data_manager.py set: Competition_Mode = False
 
 ![](2019语言与智能技术竞赛信息抽取排行榜.png)
 
-### 其它解决方案
+### 该任务的其它解决方案
 
 + [Baidu Official Baseline Model(Python2.7)](https://github.com/baidu/information-extraction) 
 + [Baseline Model(Python3)](https://github.com/yuanxiaosc/information-extraction)
