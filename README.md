@@ -11,7 +11,11 @@ The code deals with entity and relationship extraction tasks in a pipeline way. 
 整个实体关系抽取代码的具体细节和运行过程可以阅读 [bert实践:关系抽取解读](https://blog.csdn.net/weixin_42001089/article/details/97657149)，如果还有疑问或者想法欢迎提Issues :smile:
 
 ## [2019语言与智能技术竞赛](http://lic2019.ccf.org.cn/kg)
-more info: [2019语言与智能技术竞赛](http://lic2019.ccf.org.cn) 
+
+more info: 
+1. [2019语言与智能技术竞赛](http://lic2019.ccf.org.cn) 
+2. 比赛对应的论坛[语言与智能高峰论坛](http://tcci.ccf.org.cn/summit/2019/dl.php)
+3. 比赛对应的会议 [NLPCC 2019](http://tcci.ccf.org.cn/conference/2019/cfpsw.php)
 
 ### 竞赛任务
 给定schema约束集合及句子sent，其中schema定义了关系P以及其对应的主体S和客体O的类别，例如（S_TYPE:人物，P:妻子，O_TYPE:人物）、（S_TYPE:公司，P:创始人，O_TYPE:人物）等。 任务要求参评系统自动地对句子进行分析，输出句子中所有满足schema约束的SPO三元组知识Triples=[(S1, P1, O1), (S2, P2, O2)…]。
@@ -45,7 +49,7 @@ unzip dev_data.json.zip
 ...
 ```
 
-此处不再提供2019语言与智能技术竞赛_信息抽取原始数据下载，如有疑问可以联系我的邮箱 wangzichaochaochao@gmail.com
+Official Data Download Address [baidu](http://ai.baidu.com/broad/download)
 
 There is no longer a raw data download, if you have any questions, you can contact my mailbox wangzichaochaochao@gmail.com
 
@@ -161,3 +165,10 @@ predicate_data_manager.py set: Competition_Mode = False
 + [Baseline Model(Python3)](https://github.com/yuanxiaosc/information-extraction)
 + [Multiple-Relations-Extraction-Only-Look-Once](https://github.com/yuanxiaosc/Multiple-Relations-Extraction-Only-Look-Once)
 + [Schema-based-Knowledge-Extraction](https://github.com/yuanxiaosc/Schema-based-Knowledge-Extraction)
+
+
+### “信息抽取”任务冠军队伍报告
+
+89.3% F1 在测试集，投入使用效果 87.1% F1，单模型，与本代码原理一致（见本资源Abstract部分）。
+
+[Schema约束的知识抽取系统架构（“信息抽取”任务冠军队伍报告）](Schema约束的知识抽取系统架构（“信息抽取”任务冠军队伍报告）.pdf)
