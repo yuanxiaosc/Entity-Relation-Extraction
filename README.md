@@ -118,7 +118,7 @@ python run_predicate_classification.py \
 
 ### 把关系分类模型预测结果转换成序列标注模型的预测输入
 ```
-python bin/prepare_data_for_labeling_infer.py
+python bin/predicate_classifiction/prepare_data_for_labeling_infer.py
 ```
 
 ### 序列标注模型预测
